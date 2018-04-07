@@ -6,9 +6,9 @@ session_start();
 $username = "";
 $email    = "";
 $errors = array(); 
-
+//jdbc:mysql://simed:3306/simed
 // connect to the database
-$db = mysqli_connect('mysql://simed:3306/', 'userCMY', 'DqMMNULBvJeeo030', 'simed');
+$db = mysqli_connect('jdbc:mysql://simed:3306/simed', 'userCMY', 'DqMMNULBvJeeo030', 'simed');
 
 // REGISTER USER
 if (isset($_POST['reg_user'])) {
