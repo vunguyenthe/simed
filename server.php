@@ -8,7 +8,7 @@ $email    = "";
 $errors = array(); 
 //jdbc:mysql://simed:3306/simed
 // connect to the database
-$db = mysqli_connect('mysql://mysql:3306/', 'user584', 'BdtfyNAf3SqaP3cq', 'simed');
+$db = mysqli_connect('mysql://msqlsimed:3306/', 'user1WW', 'r0IRVgdFo0XoKPAI', 'simed');
 
 // REGISTER USER
 if (isset($_POST['reg_user'])) {
