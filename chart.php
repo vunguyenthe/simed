@@ -366,6 +366,25 @@
 	}	
 	?>
       </div>
+	  
+	   <div id = "chartId3" style = "width: 550px; height: 400px; margin: 0 auto">
+	   
+	   </div>
+	   
+	   <div id = "chartId4" style = "width: 550px; height: 400px; margin: 0 auto">
+	   
+	   </div>
+	   
+	   	   
+	   <div id = "chartId5" style = "width: 550px; height: 400px; margin: 0 auto">
+	   
+	   </div>
+	   
+	   	   
+	   <div id = "chartId5" style = "width: 550px; height: 400px; margin: 0 auto">
+	   
+	   </div>
+	   
 	  <!--div>
 			<p> <a href="chart.php?p=1" style="color: red;">Show Next Date</a> </p>
 	  </div-->
@@ -501,7 +520,7 @@
             // Set chart options
             var options = {
                chart: {
-                  title: 'Average Temperatures of Rome',
+                  title: '',
                   subtitle: 'Room 1'
                },   
                hAxis: {
@@ -518,8 +537,83 @@
             var chart = new google.charts.Line(document.getElementById('chartId2'));
 			chart.draw(dataTable, google.charts.Line.convertOptions(options));
 			
-           // var chart = new google.charts.Line(document.getElementById('chartId2'));
-           // chart.draw(dataTable, options);
+            // Set chart options
+            var options = {
+               chart: {
+                  title: '',
+                  subtitle: 'Room 2'
+               },   
+               hAxis: {
+                  title: 'Date: ' + avg_date_array[0] + ' - data [1..' + rangeDate[0] +']' + ', ' +  avg_date_array[1] + ' - data (' + rangeDate[0]  + '..' + rangeDate[1] +']',       
+               },
+               vAxis: {
+                  title: 'Temperature',        
+               }, 
+               'width':1200,
+               'height':400      
+            };
+
+			
+            var chart = new google.charts.Line(document.getElementById('chartId3'));
+            chart.draw(dataTable, options);
+			
+            // Set chart options
+            var options = {
+               chart: {
+                  title: '',
+                  subtitle: 'Room 3'
+               },   
+               hAxis: {
+                  title: 'Date: ' + avg_date_array[0] + ' - data [1..' + rangeDate[0] +']' + ', ' +  avg_date_array[1] + ' - data (' + rangeDate[0]  + '..' + rangeDate[1] +']',       
+               },
+               vAxis: {
+                  title: 'Temperature',        
+               }, 
+               'width':1200,
+               'height':400      
+            };
+			
+			var chart = new google.charts.Line(document.getElementById('chartId4'));
+            chart.draw(dataTable, options);
+			
+            // Set chart options
+            var options = {
+               chart: {
+                  title: '',
+                  subtitle: 'Room 4'
+               },   
+               hAxis: {
+                  title: 'Date: ' + avg_date_array[0] + ' - data [1..' + rangeDate[0] +']' + ', ' +  avg_date_array[1] + ' - data (' + rangeDate[0]  + '..' + rangeDate[1] +']',       
+               },
+               vAxis: {
+                  title: 'Temperature',        
+               }, 
+               'width':1200,
+               'height':400      
+            };
+			
+			var chart = new google.charts.Line(document.getElementById('chartId5'));
+            chart.draw(dataTable, options);
+
+            // Set chart options
+            var options = {
+               chart: {
+                  title: '',
+                  subtitle: 'Room 5'
+               },   
+               hAxis: {
+                  title: 'Date: ' + avg_date_array[0] + ' - data [1..' + rangeDate[0] +']' + ', ' +  avg_date_array[1] + ' - data (' + rangeDate[0]  + '..' + rangeDate[1] +']',       
+               },
+               vAxis: {
+                  title: 'Temperature',        
+               }, 
+               'width':1200,
+               'height':400      
+            };
+			
+			var chart = new google.charts.Line(document.getElementById('chartId6'));
+            chart.draw(dataTable, options);			
+			
 			
          }
          google.charts.setOnLoadCallback(drawChart);
