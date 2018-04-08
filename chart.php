@@ -268,6 +268,7 @@
 	$dyear;
 	$month;
 	$temperatureEachMinute = []; //per day
+	$room = [1,2,3,4,5];
 	$temperatureFullEachMinute = [];
 	$minutes = [];
 	
@@ -309,7 +310,7 @@
 			$minIdxPerDate = 0;
 		}
 		$temperatureEachMinute[$nextDay][$minIdxPerDate] = $row[1];
-		$temperatureFullEachMinute[$minIdx] = $row[1];
+		$temperatureFullEachMinute[$room[0]][$minIdx] = $row[1];
 		$minutes[$nextDay][$minIdxPerDate] = $tmpTime[1];
 		//echo 'Temperature_Celsius: '.$row[1].'</br>';
 		$minIdxPerDate++;
@@ -329,8 +330,8 @@
 	//echo 'data1: ' . $avg_temper_per_date_array[0] . '<br>';	
 	//echo 'data2: ' . $avg_temper_per_date_array[1] . '<br>';	
 	
-	echo 'date1: ' . $avg_date_array[0] . '<br>';	
-	echo 'date2: ' . $avg_date_array[1] . '<br>';
+	//echo 'date1: ' . $avg_date_array[0] . '<br>';	
+	//echo 'date2: ' . $avg_date_array[1] . '<br>';
 	
 	date_default_timezone_set('America/Los_Angeles');
 
@@ -381,7 +382,7 @@
 	   </div>
 	   
 	   	   
-	   <div id = "chartId5" style = "width: 550px; height: 400px; margin: 0 auto">
+	   <div id = "chartId6" style = "width: 550px; height: 400px; margin: 0 auto">
 	   
 	   </div>
 	   
@@ -389,8 +390,15 @@
 			<p> <a href="chart.php?p=1" style="color: red;">Show Next Date</a> </p>
 	  </div-->
 </div>	  
+
+		<script type="text/javascript">
+		  google.charts.setOnLoadCallback(function() { drawChart(); });
+		  
+		</script>
+
       <script language = "JavaScript">
 
+ 
          function drawChart() {
             // Define the chart to be drawn.
             var data = new google.visualization.DataTable();
@@ -406,7 +414,7 @@
 			
 			//per day
 			//var temperatureEachMinute = new Array(<?php echo implode(',', $temperatureEachMinute[0]); ?>);
-			var temperatureEachMinute = new Array(<?php echo implode(',', $temperatureFullEachMinute); ?>);
+			 var temperatureEachMinute = new Array(<?php echo implode(',', $temperatureFullEachMinute[$room[0]]); ?>);
 			//console.log('temperatureEachMinute.length: ' + temperatureEachMinute.length);
 			var minutes = new Array(<?php echo implode(',', $minutes[0]); ?>);
 
@@ -455,20 +463,6 @@
 			console.log('numRows: ' + numRows);
 			console.log('numCols: ' + numCols);
 			
-			/*for(var i = 0; i < monthConfig.length; i++) { //60
-				var room = (i % 5) + 1;
-				for(var j = 0; j < monthEst.length; j++) //2
-				{
-					if(monthConfig[i] == monthEst[j] &&  i % 5  == 0) { //just count one room
-						for(var k = 0; k < dayYearEst.length; k++) {
-							tempAvgPredict[k] = tempAvg[k] + bk[i] * wk[i] + ek[i];
-							console.log('tempAvgPredict: ' + tempAvgPredict[k] );
-						}
-					}
-				}
-			}*/
-
-
 			for(var k = 0; k < temperatureEachMinute.length; k++) {
 				temperaturePredictEachMinute[k] = temperatureEachMinute[k] + bkk * wkk + ekk;
 				//console.log('temperatureEachMinute: ' + temperatureEachMinute[k] );
@@ -555,7 +549,7 @@
 
 			
             var chart = new google.charts.Line(document.getElementById('chartId3'));
-            chart.draw(dataTable, options);
+            chart.draw(dataTable, google.charts.Line.convertOptions(options));
 			
             // Set chart options
             var options = {
@@ -574,7 +568,7 @@
             };
 			
 			var chart = new google.charts.Line(document.getElementById('chartId4'));
-            chart.draw(dataTable, options);
+            chart.draw(dataTable, google.charts.Line.convertOptions(options));
 			
             // Set chart options
             var options = {
@@ -593,7 +587,7 @@
             };
 			
 			var chart = new google.charts.Line(document.getElementById('chartId5'));
-            chart.draw(dataTable, options);
+            chart.draw(dataTable, google.charts.Line.convertOptions(options));
 
             // Set chart options
             var options = {
@@ -612,11 +606,11 @@
             };
 			
 			var chart = new google.charts.Line(document.getElementById('chartId6'));
-            chart.draw(dataTable, options);			
+            chart.draw(dataTable, google.charts.Line.convertOptions(options));		
 			
 			
          }
-         google.charts.setOnLoadCallback(drawChart);
+        // google.charts.setOnLoadCallback(drawChart);
       </script>
    </body>
 </html>
