@@ -1,6 +1,6 @@
 <html>
    <head>
-      <title>Google Charts Tutorial</title>
+      <title>simedtrieste Charts</title>
       <script type = "text/javascript" src = "https://www.gstatic.com/charts/loader.js"></script>
       <script type = "text/javascript">
          google.charts.load('current', {packages: ['corechart','line']});  
@@ -450,8 +450,8 @@
             // Set chart options
             var options = {
                chart: {
-                  title: 'Average Temperatures of Cities',
-                  subtitle: ''
+                  title: 'Average Temperatures of Rome',
+                  subtitle: 'Room 1'
                },   
                hAxis: {
                   title: 'day',         
