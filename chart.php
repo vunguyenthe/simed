@@ -267,6 +267,9 @@
 	$index = 0;
 	$dyear;
 	$month;
+	$temperatureEachMinute = []; //per day
+	$temperatureFullEachMinute = [];
+	$minutes = [];
 	
 		//check config 
 	$row = fgetcsv($fileHandle1, 0, ",");
@@ -275,16 +278,22 @@
 		echo 'Sorry the data file is not valid'.strstr($row[0], 'Timestamp');
 		return;
 	}
-	
+
+	$minIdxPerDate = 0;
+	$nextDay = 0;
+	$minIdx = 0;
+	$range = [];
 	while (($row = fgetcsv($fileHandle1, 0, ",")) !== FALSE) {
 		//Print out my column data.
 		//echo 'Timestamp for sample frequency every 1 min: ' . $row[0] . '<br>';
+		//if($idx++ == 0) continue;
 		$old_short_date = $cur_short_date;
 		$date_arr= explode(" ", $row[0]);
 		$cur_short_date= $date_arr[0];
 		$time= $date_arr[1];
+		$tmpTime= explode(":", $time);
 		//echo 'cur_short_date: ' . $cur_short_date . '<br>';
-		//echo 'old_short_date: ' . $old_short_date . '<br>';
+		//echo '$tmpTime[1]: ' . $tmpTime[1] . '<br>';
 		if(strcmp($cur_short_date, $old_short_date) == 0) {
 			$avg_temper +=  $row[1];
 			$count++;
@@ -293,21 +302,35 @@
 		else if($old_short_date > 0){
 			$avg_temper_per_date_array[$index] = $avg_temper/$count ;
 			$avg_date_array[$index] = $old_short_date;
+			$range[$index] = $minIdx;
 			$count = 1;
 			$avg_temper  = 0;
+			$nextDay++;
+			$minIdxPerDate = 0;
 		}
+		$temperatureEachMinute[$nextDay][$minIdxPerDate] = $row[1];
+		$temperatureFullEachMinute[$minIdx] = $row[1];
+		$minutes[$nextDay][$minIdxPerDate] = $tmpTime[1];
+		//echo 'Temperature_Celsius: '.$row[1].'</br>';
+		$minIdxPerDate++;
+		$minIdx++;
 	}
+	echo '$temperatureEachMinute[0].len: ' . count($temperatureEachMinute[0]) . '<br>';
+	echo '$tmpTime.len: ' . count($minutes[0]) . '<br>';
+
+	
 	fclose($fileHandle1);
 	if($avg_temper > 0) {
 		$index++;
 		$avg_temper_per_date_array[$index] = $avg_temper/$count ;
 		$avg_date_array[$index] = $old_short_date;
+		$range[$index] = $minIdx - 1;
 	}
 	//echo 'data1: ' . $avg_temper_per_date_array[0] . '<br>';	
 	//echo 'data2: ' . $avg_temper_per_date_array[1] . '<br>';	
 	
-	//echo 'date1: ' . $avg_date_array[0] . '<br>';	
-	//echo 'date2: ' . $avg_date_array[1] . '<br>';
+	echo 'date1: ' . $avg_date_array[0] . '<br>';	
+	echo 'date2: ' . $avg_date_array[1] . '<br>';
 	
 	date_default_timezone_set('America/Los_Angeles');
 
@@ -318,6 +341,7 @@
 	//echo 'dyear0: ' . $dyear[0] . '<br>';	
 	//echo 'dyear1: ' . $dyear[1] . '<br>';
 
+	
 	for($i = 0; $i < count($avg_date_array); $i++) {
 		$date_php = date_parse($avg_date_array[$i]);
 		if($month != '') {
@@ -342,6 +366,9 @@
 	}	
 	?>
       </div>
+	  <!--div>
+			<p> <a href="chart.php?p=1" style="color: red;">Show Next Date</a> </p>
+	  </div-->
 </div>	  
       <script language = "JavaScript">
 
@@ -350,28 +377,57 @@
             var data = new google.visualization.DataTable();
 			//var dayYearEst = [54,57];
 			//var dayYearEst= js_array($dyear);
-			
 
 			var dayYearEst = new Array(<?php echo implode(',', $dyear); ?>);
+			var rangeDate = new Array(<?php echo implode(',', $range); ?>);
+
+			var avg_date_array = new Array();
+			avg_date_array.push('<?php echo $avg_date_array[0] ?>');
+			avg_date_array.push('<?php echo $avg_date_array[1] ?>');
 			
-			var numRows = dayYearEst[0] + 30;
+			//per day
+			//var temperatureEachMinute = new Array(<?php echo implode(',', $temperatureEachMinute[0]); ?>);
+			var temperatureEachMinute = new Array(<?php echo implode(',', $temperatureFullEachMinute); ?>);
+			//console.log('temperatureEachMinute.length: ' + temperatureEachMinute.length);
+			var minutes = new Array(<?php echo implode(',', $minutes[0]); ?>);
+
+			//var tempAvgPredict = [];
+			var temperaturePredictEachMinute = [];
+			
+			var numRows = temperatureEachMinute.length;
+			console.log('len numRows: ' + numRows);
 			var numCols = 3;
 			var monthEst = [2,2];
 			var monthEst =new Array(<?php echo implode(',', $month); ?>);
-
+			
+			
 			var monthConfig = new Array(<?php echo implode(',', $monthConfig); ?>);
 			
+	
+			var ekk =0;
+			var bkk =0;
+			var wkk =0;
 			var ek = new Array(<?php echo implode(',', $ek); ?>);
 			var bk = new Array(<?php echo implode(',', $bk); ?>);
 			var wk = new Array(<?php echo implode(',', $wk); ?>);
 			
+			for(var i= 0; i < monthConfig.length; i++) {
+				if(monthConfig[i] == monthEst[0]) {
+					ekk = ek[i];
+					bkk = bk[i];
+					wkk = wk[i];
+					console.log('ekk: ' + ekk);
+					console.log('bkk: ' + bkk);
+					console.log('wkk: ' + wkk);
+					break;
+				}
+			}
+
             data.addColumn('string', 'Day');
             data.addColumn('number', 'Attual');
             data.addColumn('number', 'Predict');
-			var tempAvg = new Array(<?php echo implode(',', $avg_temper_per_date_array); ?>);
-
-			var tempAvgPredict = [];
-
+			//var tempAvg = new Array(<?php echo implode(',', $avg_temper_per_date_array); ?>);
+			
 			console.log('len ek: ' + ek.length);
 			console.log('len bk: ' + bk.length);
 			console.log('len wk: ' + wk.length);
@@ -380,7 +436,7 @@
 			console.log('numRows: ' + numRows);
 			console.log('numCols: ' + numCols);
 			
-			for(var i = 0; i < monthConfig.length; i++) { //60
+			/*for(var i = 0; i < monthConfig.length; i++) { //60
 				var room = (i % 5) + 1;
 				for(var j = 0; j < monthEst.length; j++) //2
 				{
@@ -391,50 +447,45 @@
 						}
 					}
 				}
+			}*/
+
+
+			for(var k = 0; k < temperatureEachMinute.length; k++) {
+				temperaturePredictEachMinute[k] = temperatureEachMinute[k] + bkk * wkk + ekk;
+				//console.log('temperatureEachMinute: ' + temperatureEachMinute[k] );
 			}
+
 			//t(j, k) = c(j) + b(k)*w(j, k) + e(j, k)
 
 			var dataTable = new google.visualization.DataTable();
 		 
-			 tempArr = [] // or new Array
+			tempArr = [] // or new Array
+			tempArr[0] = [];
+			tempArr[0].push('Minute');
+			tempArr[0].push('Atual Celsius');
+			tempArr[0].push('Predict Celsius');			 
 			for (var i = 0; i < numRows; i++) { //day 
-				tempArr[i] = [];
-				if(i == 0) { //set one time
-					tempArr[0].push('Day');
-					tempArr[0].push('Atual');
-					tempArr[0].push('Predict');
-				}
+				tempArr[i+1] = [];
 				for (var j = 0; j < numCols; j++) { //day, atual, predict
 				
-					if(i == 0) { //set one time
-						;
-					}
-					else { //i > 0
+
 							if(j == 0)
-								tempArr[i].push(String(i)); //day string value
+								tempArr[i+1].push(String(i+1)); //day string value
 							else  
 							{
 								var found = 0;
-								for(var k = 0; k < dayYearEst.length; k++) {
-									if(j == 1 && (i == dayYearEst[k])) {
-										tempArr[i].push(tempAvg[k]); //atual
-										found = 1;
-										break;
-									}
-									else if(j == 2 && (i == dayYearEst[k])) {
-										tempArr[i].push(tempAvgPredict[k]); //predict
-										found = 1;
-										break;
-									}
-										
+								if(j == 1) {
+									tempArr[i+1].push(temperatureEachMinute[i]); 
+									//console.log('temperatureEachMinute: ' + temperatureEachMinute[i] );
 								}
-								if(found == 0) {
-									tempArr[i].push(0);
+								if(j == 2) {
+									tempArr[i+1].push(temperaturePredictEachMinute[i]);
 								}
+
 							}
 					}
 				
-			  }
+			  
 			}
 
 			  dataTable.addColumn('string', tempArr[0][0]);
@@ -454,12 +505,12 @@
                   subtitle: 'Room 1'
                },   
                hAxis: {
-                  title: 'day',         
+                  title: 'Date: ' + avg_date_array[0] + ' - data [1..' + rangeDate[0] +']' + ', ' +  avg_date_array[1] + ' - data (' + rangeDate[0]  + '..' + rangeDate[1] +']',       
                },
                vAxis: {
                   title: 'Temperature',        
                }, 
-               'width':800,
+               'width':1200,
                'height':400      
             };
 
