@@ -465,7 +465,7 @@
 
             // Instantiate and draw the chart.
             var chart = new google.charts.Line(document.getElementById('chartId2'));
-            chart.draw(dataTable, options);
+			chart.draw(dataTable, google.charts.Line.convertOptions(options));
 			
            // var chart = new google.charts.Line(document.getElementById('chartId2'));
            // chart.draw(dataTable, options);
