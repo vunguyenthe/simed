@@ -141,7 +141,16 @@
 		
 		<p> <a href="sendmail.php" style="color: red;">Sendmail</a> </p>
 
+		<p>Select Room: <select name="roomId" id ="roomId">
+		   <option selected value="1">Room 1</option>
+		   <option value="2">Room 2</option>
+		   <option value="3">Room 3</option>
+		   <option value="4">Room 4</option>
+		   <option value="5">Room 5</option>
+		</select></p>
 
+		
+		
 		<form id="imageform1" method="post" enctype="multipart/form-data" action='chart.php'>
 
 		  Set config <input type="file" name="configFile" id="configFile" > current: <?php echo $_SESSION["configFile"] ?> </input>
@@ -161,8 +170,19 @@
 		<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.5/jquery.min.js"></script>
 		 <script src="http://malsup.github.com/jquery.form.js"></script> 
 		<script type="text/javascript">
+		var roomText = "Room 1";
+		var roomId = 1;
 		  $(document).ready(function()
 		  {
+			$('#roomId').live('change', function()
+			{
+				var e = document.getElementById("roomId");
+				roomText = e.options[e.selectedIndex].text;
+				roomId = e.options[e.selectedIndex].value;
+				//parent.window.location.reload();
+				//alert("roomId: " + roomId);
+			});
+			
 			$('#configFile').live('change', function()
 			{
 			  $("#preview").html('');
@@ -184,7 +204,7 @@
 			});			
 		  });
 		</script>
-		 <div id = "chartId2" style = "width: 550px; height: 400px; margin: 0 auto">  
+		 <div id = "chartId1" style = "width: 550px; height: 400px; margin: 0 auto">  
 			
 		<?php
 	
@@ -368,21 +388,21 @@
 	?>
       </div>
 	  
+	   <div id = "chartId2" style = "width: 550px; height: 400px; margin: 0 auto">
+	   
+	   </div>
+	   
 	   <div id = "chartId3" style = "width: 550px; height: 400px; margin: 0 auto">
 	   
 	   </div>
 	   
+	   	   
 	   <div id = "chartId4" style = "width: 550px; height: 400px; margin: 0 auto">
 	   
 	   </div>
 	   
 	   	   
 	   <div id = "chartId5" style = "width: 550px; height: 400px; margin: 0 auto">
-	   
-	   </div>
-	   
-	   	   
-	   <div id = "chartId6" style = "width: 550px; height: 400px; margin: 0 auto">
 	   
 	   </div>
 	   
@@ -515,7 +535,7 @@
             var options = {
                chart: {
                   title: '',
-                  subtitle: 'Room 1'
+                  subtitle: roomText
                },   
                hAxis: {
                   title: 'Date: ' + avg_date_array[0] + ' - data [1..' + rangeDate[0] +']' + ', ' +  avg_date_array[1] + ' - data (' + rangeDate[0]  + '..' + rangeDate[1] +']',       
@@ -528,86 +548,8 @@
             };
 
             // Instantiate and draw the chart.
-            var chart = new google.charts.Line(document.getElementById('chartId2'));
+            var chart = new google.charts.Line(document.getElementById('chartId' + roomId));
 			chart.draw(dataTable, google.charts.Line.convertOptions(options));
-			
-            // Set chart options
-            var options = {
-               chart: {
-                  title: '',
-                  subtitle: 'Room 2'
-               },   
-               hAxis: {
-                  title: 'Date: ' + avg_date_array[0] + ' - data [1..' + rangeDate[0] +']' + ', ' +  avg_date_array[1] + ' - data (' + rangeDate[0]  + '..' + rangeDate[1] +']',       
-               },
-               vAxis: {
-                  title: 'Temperature',        
-               }, 
-               'width':1200,
-               'height':400      
-            };
-
-			
-            var chart = new google.charts.Line(document.getElementById('chartId3'));
-            chart.draw(dataTable, google.charts.Line.convertOptions(options));
-			
-            // Set chart options
-            var options = {
-               chart: {
-                  title: '',
-                  subtitle: 'Room 3'
-               },   
-               hAxis: {
-                  title: 'Date: ' + avg_date_array[0] + ' - data [1..' + rangeDate[0] +']' + ', ' +  avg_date_array[1] + ' - data (' + rangeDate[0]  + '..' + rangeDate[1] +']',       
-               },
-               vAxis: {
-                  title: 'Temperature',        
-               }, 
-               'width':1200,
-               'height':400      
-            };
-			
-			var chart = new google.charts.Line(document.getElementById('chartId4'));
-            chart.draw(dataTable, google.charts.Line.convertOptions(options));
-			
-            // Set chart options
-            var options = {
-               chart: {
-                  title: '',
-                  subtitle: 'Room 4'
-               },   
-               hAxis: {
-                  title: 'Date: ' + avg_date_array[0] + ' - data [1..' + rangeDate[0] +']' + ', ' +  avg_date_array[1] + ' - data (' + rangeDate[0]  + '..' + rangeDate[1] +']',       
-               },
-               vAxis: {
-                  title: 'Temperature',        
-               }, 
-               'width':1200,
-               'height':400      
-            };
-			
-			var chart = new google.charts.Line(document.getElementById('chartId5'));
-            chart.draw(dataTable, google.charts.Line.convertOptions(options));
-
-            // Set chart options
-            var options = {
-               chart: {
-                  title: '',
-                  subtitle: 'Room 5'
-               },   
-               hAxis: {
-                  title: 'Date: ' + avg_date_array[0] + ' - data [1..' + rangeDate[0] +']' + ', ' +  avg_date_array[1] + ' - data (' + rangeDate[0]  + '..' + rangeDate[1] +']',       
-               },
-               vAxis: {
-                  title: 'Temperature',        
-               }, 
-               'width':1200,
-               'height':400      
-            };
-			
-			var chart = new google.charts.Line(document.getElementById('chartId6'));
-            chart.draw(dataTable, google.charts.Line.convertOptions(options));		
-			
 			
          }
         // google.charts.setOnLoadCallback(drawChart);
