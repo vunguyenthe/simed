@@ -1,6 +1,6 @@
 <html>
    <head>
-      <title>simedtrieste Charts</title>
+      <title>Simedtrieste Charts</title>
       <script type = "text/javascript" src = "https://www.gstatic.com/charts/loader.js"></script>
       <script type = "text/javascript">
          google.charts.load('current', {packages: ['corechart','line']});  
@@ -26,7 +26,20 @@
 	
 	<?php session_start(); 
 	
-
+	$roomSelected = $_GET['room'];
+	if($roomSelected == '' || $roomSelected < 1  || $roomSelected > 5) {
+		$roomSelected = $_SESSION['curRoom'] == '' ? 1: $_SESSION['curRoom'];
+		$roomKey = 'room'.$roomSelected;
+		if (!isset($_SESSION[$roomKey])) {
+			$_SESSION[$roomKey] = $roomSelected;
+		}
+	}
+	else {
+		$roomKey = 'room'.$roomSelected;
+		$_SESSION[$roomKey] = $roomSelected;
+	}
+	$_SESSION['curRoom'] =  $roomSelected;
+	
 	$session_id='1'; // User session id
 
 	$path = "uploads/";
@@ -140,17 +153,12 @@
 		
 		
 		<p> <a href="sendmail.php" style="color: red;">Sendmail</a> </p>
-
-		<p>Select Room: <select name="roomId" id ="roomId">
-		   <option selected value="1">Room 1</option>
-		   <option value="2">Room 2</option>
-		   <option value="3">Room 3</option>
-		   <option value="4">Room 4</option>
-		   <option value="5">Room 5</option>
-		</select></p>
-
 		
+		<p> <a href="menu.php" style="color: red;">Main Menu</a> </p>
 		
+
+		<p> Room selected: <?php echo $roomSelected ?> </p>
+				
 		<form id="imageform1" method="post" enctype="multipart/form-data" action='chart.php'>
 
 		  Set config <input type="file" name="configFile" id="configFile" > current: <?php echo $_SESSION["configFile"] ?> </input>
@@ -162,15 +170,14 @@
 		  Set data <input type="file" name="dataCsvFile" id="dataCsvFile" > current: <?php echo $_SESSION["dataCsvFile"] ?> </input>
 		  
 		</form>
-
-		
+	
 		<div id='preview'>
 		</div>
 
 		<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.5/jquery.min.js"></script>
 		 <script src="http://malsup.github.com/jquery.form.js"></script> 
 		<script type="text/javascript">
-		var roomText = "Room 1";
+		var roomText = "Room " + <?php echo $roomSelected ?>;
 		var roomId = 1;
 		  $(document).ready(function()
 		  {

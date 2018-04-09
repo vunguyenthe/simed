@@ -10,7 +10,7 @@
   	<h2>Send mail</h2>
   </div>
 	
-  <form method="post" >
+  <form method="post">
   	<?php include('errors.php'); ?>
   	<div class="input-group">
   	  <label>Email</label>

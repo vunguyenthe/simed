@@ -1,6 +1,15 @@
 <?php 
-   include('server.php');
-   session_start();
+  session_start(); 
+
+  if (!isset($_SESSION['username'])) {
+  	$_SESSION['msg'] = "You must log in first";
+  	header('location: login.php');
+  }
+  if (isset($_GET['logout'])) {
+  	session_destroy();
+  	unset($_SESSION['username']);
+  	header("location: login.php");
+  }
    
 	$errors = array(); 
 	$email = $_POST['email'];
@@ -10,17 +19,18 @@
   
 	if($email != '' && $content != '') {
 		
-		$user_check_query = "SELECT * FROM users WHERE email='$email' LIMIT 1";
+		//$user_check_query = "SELECT * FROM users WHERE email='$email' LIMIT 1";
 		//echo $user_check_query;
-		$result = mysqli_query($db, $user_check_query);
-		if($result )
-			$user = mysqli_fetch_assoc($result);
+		//$result = mysqli_query($db, $user_check_query);
+		//if($result )
+		//	$user = mysqli_fetch_assoc($result);
 	  
-		if (!$user) { // login ok
+		//if (!$user) { // login ok
 
-			 array_push($errors, "Sorry the email does not exist");
-		}
-		if (count($errors) == 0) {	
+		//	 array_push($errors, "Sorry the email does not exist");
+		//}
+		//if (count($errors) == 0) 
+		{	
 			//echo 'email:'.$email;
 			//echo 'content:'.$content;
 			$url = 'http://simed10-trieste.7e14.starter-us-west-2.openshiftapps.com/spring-mvc-angularjs/api/sendMail/';
@@ -48,7 +58,7 @@
 			//Execute the request
 			$result = curl_exec($ch);
 			if($result == 1) {
-				header('location: chart.php');
+				header('location: chart.php?room='.$_SESSION['curRoom']);
 			}
 			print_r($result); 
 		}

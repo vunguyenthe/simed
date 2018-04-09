@@ -8,7 +8,7 @@ $email    = "";
 $errors = array(); 
 //jdbc:mysql://simed:3306/simed
 // connect to the database
-$db = mysqli_connect('172.30.99.97', 'user1WW', 'r0IRVgdFo0XoKPAI', 'simed');
+$db = mysqli_connect('localhost', 'root', '123456', 'simed');
 
 // REGISTER USER
 if (isset($_POST['reg_user'])) {
@@ -72,7 +72,7 @@ else {
 	  if ($user) { // login ok
 			$_SESSION['username'] = $username;
 			$_SESSION['success'] = "You are now logged in";
-			header('location: chart.php');		  
+			header('location: menu.php');		  
 		}
 }
 

@@ -37,7 +37,7 @@
 
     <!-- logged in user information -->
     <?php  if (isset($_SESSION['username'])) : ?>
-		<?php header("location: chart.php"); ?>
+		<?php header("location: menu.php"); ?>
     <?php endif ?>
 </div>
 		
