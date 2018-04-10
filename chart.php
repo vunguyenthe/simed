@@ -28,17 +28,11 @@
 	
 	$roomSelected = $_GET['room'];
 	if($roomSelected == '' || $roomSelected < 1  || $roomSelected > 5) {
-		$roomSelected = $_SESSION['curRoom'] == '' ? 1: $_SESSION['curRoom'];
-		$roomKey = 'room'.$roomSelected;
-		if (!isset($_SESSION[$roomKey])) {
-			$_SESSION[$roomKey] = $roomSelected;
-		}
-	}
-	else {
-		$roomKey = 'room'.$roomSelected;
-		$_SESSION[$roomKey] = $roomSelected;
+		$roomSelected = ($_SESSION['curRoom'] == '' ? 1: $_SESSION['curRoom']);
 	}
 	$_SESSION['curRoom'] =  $roomSelected;
+	$configKey = 'config.'.$roomSelected;
+	$dataKey = 'data.'.$roomSelected;
 	
 	$session_id='1'; // User session id
 
@@ -60,7 +54,7 @@
 		if(in_array($ext, $valid_formats)) {
 		  if($size<(1024*1024)) // Image size max 1 MB
 		  {
-			$actual_image_name = time().'.'.$_SESSION['username'].".config.".$ext;
+			$actual_image_name = time().'.'.$_SESSION['username'].'.Room'.$roomSelected.".config.".$ext;
 			echo 'actual_image_name: '.$actual_image_name.'<br>';
 			$tmp = $_FILES['configFile']['tmp_name'];
 			echo 'tmp: '.$tmp.'<br>';
@@ -71,7 +65,7 @@
 			if(move_uploaded_file($tmp, $path.$actual_image_name)) {
 			  //echo "<img src='uploads/".$actual_image_name."' class='preview'>";
 				echo "Uploaded file: ". $actual_image_name." is ok".'<br>';
-				$_SESSION["configFile"] = $actual_image_name;
+				$_SESSION[$configKey] = $actual_image_name;
 				?>
 				 <script type = "text/javascript">
 					parent.window.location.reload();
@@ -96,7 +90,7 @@
 		  //echo 'dataCsvFile size: '.$size.'<br>';
 		  if($size<(1024*1024)) // Image size max 1 MB
 		  {
-			$actual_image_name = time().'.'.$_SESSION['username'].".data.".$ext;
+			$actual_image_name = time().'.'.$_SESSION['username'].'.Room'.$roomSelected.".data.".$ext;
 			
 			//$actual_image_name = $dataCsvFile;
 			
@@ -105,7 +99,7 @@
 			if(move_uploaded_file($tmp, $path.$actual_image_name)) {
 			  //echo "<img src='uploads/".$actual_image_name."' class='preview'>";
 				echo "Uploaded file: ". $actual_image_name." is ok".'<br>';
-				$_SESSION["dataCsvFile"] = $actual_image_name;
+				$_SESSION[$dataKey] = $actual_image_name;
 				?>
 				 <script type = "text/javascript">
 					parent.window.location.reload();
@@ -161,13 +155,13 @@
 				
 		<form id="imageform1" method="post" enctype="multipart/form-data" action='chart.php'>
 
-		  Set config <input type="file" name="configFile" id="configFile" > current: <?php echo $_SESSION["configFile"] ?> </input>
+		  Set config <input type="file" name="configFile" id="configFile" > current: <?php echo $_SESSION[$configKey] ?> </input>
 		  
 		</form>
 
 		<form id="imageform2" method="post" enctype="multipart/form-data" action='chart.php'>
 
-		  Set data <input type="file" name="dataCsvFile" id="dataCsvFile" > current: <?php echo $_SESSION["dataCsvFile"] ?> </input>
+		  Set data <input type="file" name="dataCsvFile" id="dataCsvFile" > current: <?php echo $_SESSION[$dataKey] ?> </input>
 		  
 		</form>
 	
@@ -217,25 +211,23 @@
 	
  
 	$fileHandle;
-	//echo 'configFile: '.$_SESSION["configFile"].'<br>';
-	if($_SESSION["configFile"] == '') {return; }
-	$ret = file_exists('uploads/'.$_SESSION["configFile"]);		
+	//echo 'configFile: '.$_SESSION["configFile"][$roomKey].'<br>';
+	if($_SESSION[$configKey] == '') {return; }
+	$ret = file_exists('uploads/'.$_SESSION[$configKey]);		
 	if($ret == 0) {
-		unset($_SESSION["configFile"]);
-		$_SESSION["configFile"] = '';
-
-		if($_SESSION["dataCsvFile"] == '') {return; }
-		$fileHandle1;
-		$ret = file_exists('uploads/'.$_SESSION["dataCsvFile"]);		
+		unset($_SESSION[$configKey]);
+		$_SESSION[$configKey] = '';
+		if($_SESSION[$dataKey] == '') {return; }
+		$ret = file_exists('uploads/'.$_SESSION[$dataKey]);		
 		if($ret == 0) {
-			unset($_SESSION["dataCsvFile"]);
-			$_SESSION["dataCsvFile"] = '';
+			unset($_SESSION[$dataKey]);
+			$_SESSION[$dataKey] = '';
 			return;
 		}
 	
 		return;
 	}
-	$fileHandle = fopen('uploads/'.$_SESSION["configFile"], "r");
+	$fileHandle = fopen('uploads/'.$_SESSION[$configKey], "r");
 	
 	$monthConfig;
 	$ek;
@@ -273,16 +265,16 @@
 	//echo 'ek len: ' .count($ek);
 	//echo 'wk len: ' .count($wk);
 	//Open the file.
-	//echo 'dataCsvFile: '.$_SESSION["dataCsvFile"].'<br>';
-	if($_SESSION["dataCsvFile"] == '') {return; }
+	//echo 'dataCsvFile: '.$_SESSION[$dataKey].'<br>';
+	if($_SESSION[$dataKey] == '') {return; }
 	$fileHandle1;
-	$ret = file_exists('uploads/'.$_SESSION["dataCsvFile"]);		
+	$ret = file_exists('uploads/'.$_SESSION[$dataKey]);		
 	if($ret == 0) {
-		unset($_SESSION["dataCsvFile"]);
-		$_SESSION["dataCsvFile"] = '';
+		unset($_SESSION[$dataKey]);
+		$_SESSION[$dataKey] = '';
 		return;
 	}
-	$fileHandle1 = fopen('uploads/'.$_SESSION["dataCsvFile"], "r");
+	$fileHandle1 = fopen('uploads/'.$_SESSION[$dataKey], "r");
 	//Loop through the CSV rows.
 	$cur_short_date = '';
 	$old_short_date = '';
@@ -419,7 +411,7 @@
 </div>	  
 
 		<script type="text/javascript">
-		  google.charts.setOnLoadCallback(function() { drawChart(); });
+		 google.charts.setOnLoadCallback(function() { drawChart(); });
 		  
 		</script>
 
