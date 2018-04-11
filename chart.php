@@ -1,3 +1,4 @@
+<?php include('server.php') ?>
 <html>
    <head>
       <title>Simedtrieste Charts</title>
@@ -32,39 +33,24 @@
 	}
 	$_SESSION['curRoom'] =  $roomSelected;
 	$configKey = 'config.'.$roomSelected;
+	$configFileFromDisk = 'Room'.$roomSelected.".config.csv";
 	$dataKey = 'data.'.$roomSelected;
-	
+	$csv_file_name = $_SESSION[$dataKey];
 	$session_id='1'; // User session id
-
 	$path = "uploads/";
-
 	$valid_formats = array("csv");
 
 	if(isset($_POST) and $_SERVER['REQUEST_METHOD'] == "POST") {
-	  $configFile = $_FILES['configFile']['name'];
-	  //echo 'configFile'. $configFile;
 	  $dataCsvFile = $_FILES['dataCsvFile']['name'];
-	 // echo 'dataCsvFile: '.$dataCsvFile.'<br>';
-	  //echo 'configFile: '.$configFile.'<br>';
-	  //echo 'size'.$size;
 	  if(strlen($configFile)) {
 		$size = $_FILES['configFile']['size'];
-		//echo 'configFile size: '.$size.'<br>';
 		list($txt, $ext) = explode(".", $configFile);
 		if(in_array($ext, $valid_formats)) {
 		  if($size<(1024*1024)) // Image size max 1 MB
 		  {
-			$actual_image_name = time().'.'.$_SESSION['username'].'.Room'.$roomSelected.".config.".$ext;
-			echo 'actual_image_name: '.$actual_image_name.'<br>';
+			$actual_image_name = 'Room'.$roomSelected.".config.".$ext;
 			$tmp = $_FILES['configFile']['tmp_name'];
-			echo 'tmp: '.$tmp.'<br>';
-			
-			echo 'path:'.$path.$actual_image_name.'<br>';
-			
-
 			if(move_uploaded_file($tmp, $path.$actual_image_name)) {
-			  //echo "<img src='uploads/".$actual_image_name."' class='preview'>";
-				echo "Uploaded file: ". $actual_image_name." is ok".'<br>';
 				$_SESSION[$configKey] = $actual_image_name;
 				?>
 				 <script type = "text/javascript">
@@ -81,25 +67,17 @@
 		else
 		  echo "Invalid file format..";
 	  }
-	  
 	  if(strlen($dataCsvFile)) {
 		list($txt, $ext) = explode(".", $dataCsvFile);
 
 		if(in_array($ext,$valid_formats)) {
 		  $size = $_FILES['dataCsvFile']['size'];
-		  //echo 'dataCsvFile size: '.$size.'<br>';
 		  if($size<(1024*1024)) // Image size max 1 MB
 		  {
-			$actual_image_name = time().'.'.$_SESSION['username'].'.Room'.$roomSelected.".data.".$ext;
-			
-			//$actual_image_name = $dataCsvFile;
-			
+			$csv_file_name = $_FILES['dataCsvFile']['name'];
 			$tmp = $_FILES['dataCsvFile']['tmp_name'];
-
-			if(move_uploaded_file($tmp, $path.$actual_image_name)) {
-			  //echo "<img src='uploads/".$actual_image_name."' class='preview'>";
-				echo "Uploaded file: ". $actual_image_name." is ok".'<br>';
-				$_SESSION[$dataKey] = $actual_image_name;
+			if(move_uploaded_file($tmp, $path.$csv_file_name)) {
+				$_SESSION[$dataKey] = $csv_file_name;
 				?>
 				 <script type = "text/javascript">
 					parent.window.location.reload();
@@ -155,13 +133,13 @@
 				
 		<form id="imageform1" method="post" enctype="multipart/form-data" action='chart.php'>
 
-		  Set config <input type="file" name="configFile" id="configFile" > current: <?php echo $_SESSION[$configKey] ?> </input>
+		  Set config <input type="file" name="configFile" id="configFile" >current:<?php echo $configFileFromDisk ?> </input>
 		  
 		</form>
 
 		<form id="imageform2" method="post" enctype="multipart/form-data" action='chart.php'>
 
-		  Set data <input type="file" name="dataCsvFile" id="dataCsvFile" > current: <?php echo $_SESSION[$dataKey] ?> </input>
+		  Set data <input type="file" name="dataCsvFile" id="dataCsvFile" >current:<?php echo $_SESSION[$dataKey] ?> </input>
 		  
 		</form>
 	
@@ -207,28 +185,23 @@
 		</script>
 		 <div id = "chartId1" style = "width: 550px; height: 400px; margin: 0 auto">  
 			
-		<?php
-	
+	<?php
  
-	$fileHandle;
-	//echo 'configFile: '.$_SESSION["configFile"][$roomKey].'<br>';
-	if($_SESSION[$configKey] == '') {return; }
-	$ret = file_exists('uploads/'.$_SESSION[$configKey]);		
-	if($ret == 0) {
+	if(file_exists('uploads/'.$configFileFromDisk) == 0) {
+		$ret = file_exists('uploads/'.$_SESSION[$configKey]);	
 		unset($_SESSION[$configKey]);
 		$_SESSION[$configKey] = '';
-		if($_SESSION[$dataKey] == '') {return; }
-		$ret = file_exists('uploads/'.$_SESSION[$dataKey]);		
-		if($ret == 0) {
-			unset($_SESSION[$dataKey]);
-			$_SESSION[$dataKey] = '';
-			return;
-		}
-	
 		return;
 	}
-	$fileHandle = fopen('uploads/'.$_SESSION[$configKey], "r");
-	
+	//data key
+	if($_SESSION[$dataKey] == '') { return; }
+	if(file_exists('uploads/'.$_SESSION[$dataKey]) == 0) {
+		unset($_SESSION[$dataKey]);
+		$_SESSION[$dataKey] = '';
+		return;
+	}
+
+	$fileHandle = fopen('uploads/'.$configFileFromDisk, "r");
 	$monthConfig;
 	$ek;
 	$bk;
@@ -244,28 +217,15 @@
 	//Loop through the CSV rows.
 	$index = 0;
 	while (($row = fgetcsv($fileHandle, 0, ",")) !== FALSE) {
-		//Print out my column data.
-		//echo 'Month: ' . $row[0] . '<br>';
-		//	echo 'Room: ' . $row[1] . '<br>';
-		//echo 'b(k): ' . $row[2] . '<br>';
-		//echo 'e(k): ' . $row[3] . '<br>';
-		//echo '<br>';
 		if($index != 0) {
 			$monthConfig[$index] = $row[0];
 			$ek[$index] = $row[2];
 			$bk[$index] = $row[3];
 			$wk[$index] = $row[4];
 		}
-		//echo 'b(k): ' . $row[2] . '<br>';
 		$index++;
 	}
 	fclose($fileHandle);
-	//echo 'monthConfig len: ' .count($monthConfig);
-	//echo 'ek len: ' .count($ek);
-	//echo 'ek len: ' .count($ek);
-	//echo 'wk len: ' .count($wk);
-	//Open the file.
-	//echo 'dataCsvFile: '.$_SESSION[$dataKey].'<br>';
 	if($_SESSION[$dataKey] == '') {return; }
 	$fileHandle1;
 	$ret = file_exists('uploads/'.$_SESSION[$dataKey]);		
@@ -303,21 +263,16 @@
 	$nextDay = 0;
 	$minIdx = 0;
 	$range = [];
+	$watt = 0;
 	while (($row = fgetcsv($fileHandle1, 0, ",")) !== FALSE) {
-		//Print out my column data.
-		//echo 'Timestamp for sample frequency every 1 min: ' . $row[0] . '<br>';
-		//if($idx++ == 0) continue;
 		$old_short_date = $cur_short_date;
 		$date_arr= explode(" ", $row[0]);
 		$cur_short_date= $date_arr[0];
 		$time= $date_arr[1];
 		$tmpTime= explode(":", $time);
-		//echo 'cur_short_date: ' . $cur_short_date . '<br>';
-		//echo '$tmpTime[1]: ' . $tmpTime[1] . '<br>';
 		if(strcmp($cur_short_date, $old_short_date) == 0) {
 			$avg_temper +=  $row[1];
 			$count++;
-			//echo 'avg_temper: ' . $avg_temper . '<br>';
 		}
 		else if($old_short_date > 0){
 			$avg_temper_per_date_array[$index] = $avg_temper/$count ;
@@ -330,49 +285,35 @@
 		}
 		$temperatureEachMinute[$nextDay][$minIdxPerDate] = $row[1];
 		$temperatureFullEachMinute[$room[0]][$minIdx] = $row[1];
+		$watt += $row[1];
 		$minutes[$nextDay][$minIdxPerDate] = $tmpTime[1];
-		//echo 'Temperature_Celsius: '.$row[1].'</br>';
 		$minIdxPerDate++;
 		$minIdx++;
 	}
+	fclose($fileHandle1);	
+	
 	echo '$temperatureEachMinute[0].len: ' . count($temperatureEachMinute[0]) . '<br>';
 	echo '$tmpTime.len: ' . count($minutes[0]) . '<br>';
-
 	
-	fclose($fileHandle1);
 	if($avg_temper > 0) {
 		$index++;
 		$avg_temper_per_date_array[$index] = $avg_temper/$count ;
 		$avg_date_array[$index] = $old_short_date;
 		$range[$index] = $minIdx - 1;
 	}
-	//echo 'data1: ' . $avg_temper_per_date_array[0] . '<br>';	
-	//echo 'data2: ' . $avg_temper_per_date_array[1] . '<br>';	
-	
-	//echo 'date1: ' . $avg_date_array[0] . '<br>';	
-	//echo 'date2: ' . $avg_date_array[1] . '<br>';
-	
 	date_default_timezone_set('America/Los_Angeles');
-
-	//echo $avg_date_array[0];
 	$dyear[0] = date("z", strtotime($avg_date_array[0]));
 	$dyear[1] = date("z", strtotime($avg_date_array[1]));
-	
-	//echo 'dyear0: ' . $dyear[0] . '<br>';	
-	//echo 'dyear1: ' . $dyear[1] . '<br>';
 
-	
 	for($i = 0; $i < count($avg_date_array); $i++) {
 		$date_php = date_parse($avg_date_array[$i]);
 		if($month != '') {
 			if (!in_array($date_php['month'], $month)) {
 				$month[$i] = $date_php['month'];
-				//echo $month[$i].'|';			
 			}
 		}
 		else {
 				$month[$i] = $date_php['month'];
-				//echo $month[$i].'|';		
 		}
 	}
 	if(count($month) == 1) {
@@ -384,6 +325,40 @@
 	if(count($avg_temper_per_date_array) == 1) {
 		$avg_temper_per_date_array[1] = $avg_temper_per_date_array[0];
 	}	
+	
+	//store to database to analysis
+	{
+	  /*$avgWatt = ($watt/$range[1])*$bk[$roomSelected];
+	  echo 'watt '.$watt.'</br>';
+	  echo 'range '.$range[1].'</br>';
+	  echo 'avgWatt '.$avgWatt.'</br>';
+	  echo 'bk[$roomSelected] '.$bk[$roomSelected].'</br>';
+	  echo 'bk[$roomSelected] '.$bk[$roomSelected].'</br>';
+	  echo '[$month[0] '.$month[0].'</br>';
+	  echo '[$month[1] '.$month[1].'</br>';
+	  echo 'wk[$month[0] '.$wk[$month[0]].'</br>';
+	  echo '[$month[1] '.$wk[$month[1]].'</br>';
+	  echo 'csv_file_name '.$csv_file_name.'</br>';*/
+
+	  $savedEnergy = (1 - (1/$avgWatt))* ($wk[$month[0]] + $wk[$month[1]])/2;
+	  //echo 'savedEnergy '.$savedEnergy.'</br>';
+	   
+	  $user_check_query = "SELECT * FROM energy WHERE room = $roomSelected and csv_file_name='$csv_file_name' LIMIT 1";
+	  //echo $user_check_query;
+	  $result = mysqli_query($db, $user_check_query);
+	  $user = mysqli_fetch_assoc($result);
+	  $duration = $month[0];
+		if ($user) { // login ok
+				//update
+			$query = "UPDATE energy set room = '$roomSelected', month= '$duration', savedEnergy = '$savedEnergy'";
+		}
+		else {
+			$query = "INSERT INTO energy (room, csv_file_name, month, savedEnergy) VALUES('$roomSelected', '$csv_file_name', '$duration', '$savedEnergy')";
+			mysqli_query($db, $query);			
+		}
+		mysqli_query($db, $query);			
+	}
+	
 	?>
       </div>
 	  
@@ -548,7 +523,7 @@
 
             // Instantiate and draw the chart.
             var chart = new google.charts.Line(document.getElementById('chartId' + roomId));
-			chart.draw(dataTable, google.charts.Line.convertOptions(options));
+			//chart.draw(dataTable, google.charts.Line.convertOptions(options));
 			
          }
         // google.charts.setOnLoadCallback(drawChart);
