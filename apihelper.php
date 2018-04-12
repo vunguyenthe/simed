@@ -33,7 +33,7 @@
 		{	
 			//echo 'email:'.$email;
 			//echo 'content:'.$content;
-			$url = 'http://simed10-trieste.7e14.starter-us-west-2.openshiftapps.com/spring-mvc-angularjs/api/sendMail/';
+			$url = 'http://simed5-trieste.a3c1.starter-us-west-1.openshiftapps.com/spring-mvc-angularjs/api/sendMail/';
 			$params = array(
 				'email' => $email,
 				'content' => $content,
