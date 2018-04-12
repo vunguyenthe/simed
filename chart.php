@@ -341,9 +341,9 @@
 	  echo 'csv_file_name '.$csv_file_name.'</br>';*/
 
 	  $savedEnergy = (1 - (1/$avgWatt))* ($wk[$month[0]] + $wk[$month[1]])/2;
-	  //echo 'savedEnergy '.$savedEnergy.'</br>';
+	  echo 'savedEnergy '.$savedEnergy.'</br>';
 	   
-	  $user_check_query = "SELECT * FROM energy WHERE room = $roomSelected and csv_file_name='$csv_file_name' LIMIT 1";
+	  /*$user_check_query = "SELECT * FROM energy WHERE room = $roomSelected and csv_file_name='$csv_file_name' LIMIT 1";
 	  //echo $user_check_query;
 	  $result = mysqli_query($db, $user_check_query);
 	  $user = mysqli_fetch_assoc($result);
@@ -356,7 +356,8 @@
 			$query = "INSERT INTO energy (room, csv_file_name, month, savedEnergy) VALUES('$roomSelected', '$csv_file_name', '$duration', '$savedEnergy')";
 			mysqli_query($db, $query);			
 		}
-		mysqli_query($db, $query);			
+		mysqli_query($db, $query);	
+		mysqli_free_result($result);*/		
 	}
 	
 	?>
