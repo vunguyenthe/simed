@@ -292,8 +292,8 @@
 	}
 	fclose($fileHandle1);	
 	
-	echo '$temperatureEachMinute[0].len: ' . count($temperatureEachMinute[0]) . '<br>';
-	echo '$tmpTime.len: ' . count($minutes[0]) . '<br>';
+	//echo '$temperatureEachMinute[0].len: ' . count($temperatureEachMinute[0]) . '<br>';
+	//echo '$tmpTime.len: ' . count($minutes[0]) . '<br>';
 	
 	if($avg_temper > 0) {
 		$index++;
@@ -523,7 +523,7 @@
 
             // Instantiate and draw the chart.
             var chart = new google.charts.Line(document.getElementById('chartId' + roomId));
-			//chart.draw(dataTable, google.charts.Line.convertOptions(options));
+			chart.draw(dataTable, google.charts.Line.convertOptions(options));
 			
          }
         // google.charts.setOnLoadCallback(drawChart);
